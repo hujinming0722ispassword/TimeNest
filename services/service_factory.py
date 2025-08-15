@@ -20,6 +20,18 @@ from services.reminder_service import ReminderService
 from services.sync_service import SyncService
 from services.config_service import ConfigService
 
+<<<<<<< HEAD
+# 新增的功能模块服务导入
+from services.weather_service import WeatherService
+from services.countdown_service import CountdownService
+from services.course_alias_service import CourseAliasService
+from services.task_scheduler_service import TaskSchedulerService
+from services.startup_service import StartupService
+from services.debug_service import DebugService
+from services.time_sync_service import TimeSyncService
+
+=======
+>>>>>>> 3ebc1a0d5b5d68fcc8be71ad4e1441605fb57214
 
 class ServiceFactory:
     """服务工厂类"""
@@ -69,7 +81,19 @@ class ServiceFactory:
             "conflict_detection": ConflictDetectionService,
             "reminder": ReminderService,
             "sync": SyncService,
+<<<<<<< HEAD
+            "config": ConfigService,
+            # 新增的功能模块服务映射
+            "weather": WeatherService,
+            "countdown": CountdownService,
+            "course_alias": CourseAliasService,
+            "task_scheduler": TaskSchedulerService,
+            "startup": StartupService,
+            "debug": DebugService,
+            "time_sync": TimeSyncService
+=======
             "config": ConfigService
+>>>>>>> 3ebc1a0d5b5d68fcc8be71ad4e1441605fb57214
         }
         
         if service_type not in service_map:
@@ -206,4 +230,79 @@ class ServiceFactory:
         Returns:
             配置服务实例
         """
+<<<<<<< HEAD
         return cls.get_service("config")
+    
+    # 新增的功能模块服务获取方法
+    @classmethod
+    def get_weather_service(cls) -> WeatherService:
+        """
+        获取天气服务实例
+        
+        Returns:
+            天气服务实例
+        """
+        return cls.get_service("weather")
+    
+    @classmethod
+    def get_countdown_service(cls) -> CountdownService:
+        """
+        获取倒计时服务实例
+        
+        Returns:
+            倒计时服务实例
+        """
+        return cls.get_service("countdown")
+    
+    @classmethod
+    def get_course_alias_service(cls) -> CourseAliasService:
+        """
+        获取课程简称服务实例
+        
+        Returns:
+            课程简称服务实例
+        """
+        return cls.get_service("course_alias")
+    
+    @classmethod
+    def get_task_scheduler_service(cls) -> TaskSchedulerService:
+        """
+        获取任务调度服务实例
+        
+        Returns:
+            任务调度服务实例
+        """
+        return cls.get_service("task_scheduler")
+    
+    @classmethod
+    def get_startup_service(cls) -> StartupService:
+        """
+        获取开机启动服务实例
+        
+        Returns:
+            开机启动服务实例
+        """
+        return cls.get_service("startup")
+    
+    @classmethod
+    def get_debug_service(cls) -> DebugService:
+        """
+        获取调试服务实例
+        
+        Returns:
+            调试服务实例
+        """
+        return cls.get_service("debug")
+    
+    @classmethod
+    def get_time_sync_service(cls) -> TimeSyncService:
+        """
+        获取时间同步服务实例
+        
+        Returns:
+            时间同步服务实例
+        """
+        return cls.get_service("time_sync")
+=======
+        return cls.get_service("config")
+>>>>>>> 3ebc1a0d5b5d68fcc8be71ad4e1441605fb57214
