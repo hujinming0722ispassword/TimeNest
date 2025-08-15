@@ -7,7 +7,6 @@ TimeNest 课表软件前端应用
 import sys
 import os
 import json
-import time
 from datetime import datetime, timedelta
 import random
 
@@ -17,9 +16,9 @@ from PySide6.QtWidgets import (QApplication, QWidget, QLabel, QVBoxLayout,
                             QLineEdit, QComboBox, QDateEdit, QTimeEdit, 
                             QListWidget, QListWidgetItem, QTabWidget, 
                             QTableWidget, QTableWidgetItem, QHeaderView, 
-                            QFrame, QScrollArea)
-from PySide6.QtGui import QIcon, QFont, QColor, QPalette, QCursor, QPainter, QBrush, QActionGroup, QTextCharFormat, QTextCursor, QAction, QGuiApplication
-from PySide6.QtCore import Qt, QPoint, QTimer, QPropertyAnimation, QEasingCurve, QSize, QUrl
+                            QFrame,)
+from PySide6.QtGui import QIcon, QFont, QColor, QCursor,QAction, QGuiApplication
+from PySide6.QtCore import Qt, QTimer, QPropertyAnimation
 
 # 设置中文字体支持
 font = QFont()
@@ -27,7 +26,7 @@ font.setFamily("SimHei")
 
 # 应用程序主类
 class TimeNestApp(QApplication):
-    def __init__(self, args):
+    def __init__(self, args: list[str]):
         super().__init__(args)
         self.setApplicationName("TimeNest")
         self.setApplicationVersion("1.0.0")
@@ -57,7 +56,7 @@ class TimeNestApp(QApplication):
                 self.courses = json.load(f)
         else:
             # 示例数据
-            self.courses = [
+            self.courses: list[dict[str, any]] = [
                 {
                     "id": "course1",
                     "name": "高等数学",
@@ -102,7 +101,7 @@ class TimeNestApp(QApplication):
             # 示例数据
             today = datetime.now().strftime("%Y-%m-%d")
             next_week = (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")
-            self.schedules = [
+            self.schedules: list[dict[str, any]] = [
                 {
                     "id": "schedule1",
                     "day_of_week": 0,  # 0表示星期日
@@ -138,7 +137,7 @@ class TimeNestApp(QApplication):
             with open(temp_changes_file, 'r', encoding='utf-8') as f:
                 self.temp_changes = json.load(f)
         else:
-            self.temp_changes = []
+            self.temp_changes: list[dict[str, any]] = []
             # 保存空数据
             with open(temp_changes_file, 'w', encoding='utf-8') as f:
                 json.dump(self.temp_changes, f, ensure_ascii=False, indent=2)
@@ -149,7 +148,7 @@ class TimeNestApp(QApplication):
             with open(settings_file, 'r', encoding='utf-8') as f:
                 self.settings = json.load(f)
         else:
-            self.settings = {
+            self.settings: dict[str, any] = {
                 "window_position": {
                     "x": 100,
                     "y": 100
@@ -179,7 +178,7 @@ class TimeNestApp(QApplication):
         with open(os.path.join(self.data_dir, "settings.json"), 'w', encoding='utf-8') as f:
             json.dump(self.settings, f, ensure_ascii=False, indent=2)
 
-    def get_course_by_id(self, course_id):
+    def get_course_by_id(self, course_id: str) -> dict[str, any] | None:
         """根据ID获取课程"""
         for course in self.courses:
             if course["id"] == course_id:
@@ -241,8 +240,8 @@ class FloatingWindow(QWidget):
 
     def initUI(self):
         # 设置窗口样式
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(Qt.WindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool))
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
         # 窗口大小和位置 - 调整为屏幕中上部
         screen_geometry = QGuiApplication.primaryScreen().availableGeometry()
@@ -287,23 +286,24 @@ class FloatingWindow(QWidget):
 
         # 时间标签
         self.time_label = QLabel("", self)
-        self.time_label.setFont(QFont("SimHei", 16, QFont.Bold))
-        self.time_label.setAlignment(Qt.AlignCenter)
+        self.time_label.setFont(QFont("SimHei", 16, QFont.Weight.Bold))
+        self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         background_layout.addWidget(self.time_label)
 
         # 课程状态标签
-        if self == "none":
-            self.status_label = QLabel("今日无课程", self)
-        else:
-            self.status_label = QLabel(self)
+        # 先创建标签对象
+        self.status_label = QLabel("今日无课程", self)
         self.status_label.setFont(QFont("SimHei", 12))
         self.status_label.setAlignment(Qt.AlignCenter)
         background_layout.addWidget(self.status_label)
 
+        # 后续可以根据需要更新标签文本
+        # 例如: if some_condition: self.status_label.setText("新文本")
+
         # 天气标签
         self.weather_label = QLabel("小雨 25℃", self)
         self.weather_label.setFont(QFont("SimHei", 12))
-        self.weather_label.setAlignment(Qt.AlignCenter)
+        self.weather_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         background_layout.addWidget(self.weather_label)
 
         main_layout.addWidget(self.background_frame)
@@ -381,9 +381,9 @@ class FloatingWindow(QWidget):
 
     def mousePressEvent(self, event):
         """鼠标按下事件，开始拖动"""
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self.drag_position = event.globalPos() - self.frameGeometry().topLeft()
-            self.setCursor(QCursor(Qt.ClosedHandCursor))
+            self.setCursor(QCursor(Qt.CursorShape.ClosedHandCursor))
             self.stop_fade_out()
             # 用户交互后，重置自动隐藏计时器
             self.hide_timer.stop()
@@ -402,8 +402,8 @@ class FloatingWindow(QWidget):
 
     def mouseReleaseEvent(self, event):
         """鼠标释放事件，结束拖动"""
-        if event.button() == Qt.LeftButton:
-            self.setCursor(QCursor(Qt.ArrowCursor))
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
             # 保存窗口位置
             self.app.settings["window_position"] = {
                 "x": self.x(),
